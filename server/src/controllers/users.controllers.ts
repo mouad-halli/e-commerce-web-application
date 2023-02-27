@@ -3,7 +3,7 @@ import { StatusCodes } from "http-status-codes"
 
 const { OK, CREATED } = StatusCodes
 
-export const getUser = (req: Request, res: Response, next: NextFunction) => {
+const getUser = (req: Request, res: Response, next: NextFunction) => {
     try {
         
         res.status(OK).json('get user called')
@@ -13,7 +13,7 @@ export const getUser = (req: Request, res: Response, next: NextFunction) => {
     }
 }
 
-export const createUser = (req: Request, res: Response, next: NextFunction) => {
+const createUser = (req: Request, res: Response, next: NextFunction) => {
     try {
         
         res.status(CREATED).json('create user called')
@@ -23,7 +23,7 @@ export const createUser = (req: Request, res: Response, next: NextFunction) => {
     }
 }
 
-export const updateUser = (req: Request, res: Response, next: NextFunction) => {
+const updateUser = (req: Request, res: Response, next: NextFunction) => {
     try {
         
         res.status(OK).json('update user called')
@@ -33,7 +33,7 @@ export const updateUser = (req: Request, res: Response, next: NextFunction) => {
     }
 }
 
-export const deleteUser = (req: Request, res: Response, next: NextFunction) => {
+const deleteUser = (req: Request, res: Response, next: NextFunction) => {
     try {
         
         res.status(OK).json('delete user called')
@@ -41,4 +41,9 @@ export const deleteUser = (req: Request, res: Response, next: NextFunction) => {
     } catch (error) {
         next(error)
     }
+}
+
+export = {
+    getUser, createUser,
+    updateUser, deleteUser
 }

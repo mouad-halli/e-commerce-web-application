@@ -3,7 +3,7 @@ import { CLIENT_URL, PORT } from './config/environment'
 import cors from 'cors'
 import { STATUS_CODES } from 'http'
 import { connectToDatabase } from './config/database'
-import userRoute from './routes/user'
+import userRoute from './routes/users.routes'
 
 const { INTERNAL_SERVER_ERROR } = STATUS_CODES
 
