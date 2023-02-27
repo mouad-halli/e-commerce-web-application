@@ -3,6 +3,7 @@ import { CLIENT_URL, PORT } from './config/environment'
 import cors from 'cors'
 import { STATUS_CODES } from 'http'
 import { connectToDatabase } from './config/database'
+import userRoute from './routes/user'
 
 const { INTERNAL_SERVER_ERROR } = STATUS_CODES
 
@@ -18,6 +19,8 @@ app.use(express.json())
 app.get('/', (req: Request, res: Response, next: NextFunction) => {
     res.status(200).json('Hello World')
 })
+
+app.use('/user', userRoute)
 
 app.use((error: any, req: Request, res: Response, next: NextFunction) => {
 	const errorStatus = error.status || 500
