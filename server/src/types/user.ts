@@ -1,10 +1,11 @@
+import { Request } from "express"
 import { Types } from "mongoose"
 
 export interface IUser {
     _id: Types.ObjectId
     username: string
     email: string
-    password?: string
+    password: string
     accessToken?: string
     refreshToken?: string
 }

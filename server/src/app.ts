@@ -5,15 +5,25 @@ import { STATUS_CODES } from 'http'
 import { connectToDatabase } from './config/database'
 import userRoutes from './routes/users.routes'
 import authenticationRoutes from './routes/authentication.routes'
+import cookieParser from 'cookie-parser'
+import { IUser } from './types/user'
+
+declare module 'express-serve-static-core' {
+    interface Request {
+        user: IUser
+    }
+}
 
 const { INTERNAL_SERVER_ERROR } = STATUS_CODES
 
 const app = express()
 
 app.use(cors({
-	origin: CLIENT_URL,
-	credentials: true
+	credentials: true,
+	origin: CLIENT_URL
 }))
+
+app.use(cookieParser())
 
 app.use(express.json())
 
