@@ -9,7 +9,7 @@ import {
     ACCESS_TOKEN_EXPIRATION, REFRESH_TOKEN_EXPIRATION
 } from '../config/environment'
 
-const { OK, CREATED, BAD_REQUEST } = StatusCodes
+const { OK, CREATED, BAD_REQUEST, UNAUTHORIZED } = StatusCodes
 
 const register = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -82,6 +82,53 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
     }
 }
 
+const logout = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        
+        await User.findOneAndUpdate({ _id: req.user._id }, {
+            accessToken: null, refreshToken: null
+        })
+
+        res.status(OK).json('logged out successfully')
+
+    } catch (error) {
+        next(error)
+    }
+}
+
+const refreshAccessToken = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+
+        const accessToken = req.cookies.accessToken
+
+        const { exp } = jwt.decode(accessToken) as jwt.JwtPayload
+
+        if (accessToken !== req.user.accessToken || !exp || exp * 1000 > Date.now()) {
+            await User.findOneAndUpdate({ _id: req.user._id }, {
+                accessToken: null, refreshToken: null
+            })
+            return next(createError(UNAUTHORIZED, 'you are not authorized to do this action'))
+        }
+
+        const generatedAccessToken = jwt.sign(
+            { _id: req.user._id }, ACCESS_TOKEN_SECRET,
+            { expiresIn: ACCESS_TOKEN_EXPIRATION }
+        )
+
+        await User.findByIdAndUpdate(req.user._id, {
+            accessToken: generatedAccessToken
+        })
+
+        res.status(OK)
+        .cookie('accessToken', generatedAccessToken, { httpOnly: true })
+        .json('access token refreshed successfully')
+        
+    } catch (error) {
+        next(error)
+    }
+}
+
+
 export = {
-    register, login
+    register, login, logout, refreshAccessToken
 }
