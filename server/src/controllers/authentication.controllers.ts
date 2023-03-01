@@ -3,6 +3,11 @@ import { StatusCodes } from "http-status-codes"
 import User from '../models/users'
 import { createError } from "../utils/error"
 import bcryptjs from 'bcryptjs'
+import jwt from 'jsonwebtoken'
+import {
+    ACCESS_TOKEN_SECRET, REFRESH_TOKEN_SECRET, 
+    ACCESS_TOKEN_EXPIRATION, REFRESH_TOKEN_EXPIRATION
+} from '../config/environment'
 
 const { OK, CREATED, BAD_REQUEST } = StatusCodes
 
@@ -39,10 +44,38 @@ const register = async (req: Request, res: Response, next: NextFunction) => {
     }
 }
 
-const login = (req: Request, res: Response, next: NextFunction) => {
+const login = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        
-        res.status(CREATED).json('login called')
+
+        const user = await User.findOne({username: req.body.username}).select('_id username email password')
+
+        if (!user)
+            return next(createError(BAD_REQUEST, "Wrong password or username"))
+
+        const isPasswordCorrect = await bcryptjs.compare(req.body.password, String(user.password))
+
+        if (isPasswordCorrect === false)
+            return next(createError(BAD_REQUEST, "Wrong password or username"))
+
+        const generatedRefreshToken = jwt.sign(
+            { _id: user._id }, REFRESH_TOKEN_SECRET,
+            { expiresIn: REFRESH_TOKEN_EXPIRATION }
+        )
+
+        const generatedAccessToken = jwt.sign(
+            { _id: user._id }, ACCESS_TOKEN_SECRET,
+            { expiresIn: ACCESS_TOKEN_EXPIRATION }
+        )
+
+        await User.findByIdAndUpdate(user._id, {
+            refreshToken: generatedRefreshToken,
+            accessToken: generatedAccessToken
+        })
+
+        res.status(OK)
+        .cookie('refreshToken', generatedRefreshToken, { httpOnly: true })
+        .cookie('accessToken', generatedAccessToken, { httpOnly: true })
+        .json({username: user.username, email: user.email})
 
     } catch (error) {
         next(error)
