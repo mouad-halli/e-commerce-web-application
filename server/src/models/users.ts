@@ -5,19 +5,13 @@ const UserSchema = new Schema<IUser>({
 
     username: { type: String },
 
-    // firstname: { type: String },
-
-    // lastname: { type: String },
-
-    // imgPath: { type: String },
-    
     email: { type: String },
     
     password: { type: String },
 
-    // googleId: { type: Number },
+    accessToken: { type: String },
 
-    // phone: { type: Number },
+    refreshToken: { type: String }
 
 
 } )
