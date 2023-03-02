@@ -1,0 +1,5 @@
+export const useHomeHook = () => {
+
+    
+    return {}
+}

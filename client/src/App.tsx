@@ -1,13 +1,17 @@
-import { useState } from 'react'
-import './App.css'
+import { Outlet } from "react-router-dom";
+import './App.scss'
+import Navbar from "./components/ui/Navbar/Navbar";
+import Footer from "./components/ui/Footer/Footer";
 
-function App() {
+const App = () => {
 
-  return (
-    <div>
-      Hello World
-    </div>
-  )
+	return (
+		<div className="app-container">
+			<Navbar />
+			<Outlet />
+			<Footer />
+		</div>
+	)
 }
 
 export default App
